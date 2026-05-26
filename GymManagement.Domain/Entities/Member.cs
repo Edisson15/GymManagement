@@ -13,6 +13,6 @@ namespace GymManagement.Domain.Entities
 
         // Relación N:M (se completará después)
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
-
+        public object MembersId { get; set; }
     }
 }
