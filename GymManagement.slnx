@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="GymManagement.API/GymManagement.API.csproj" Id="199c03af-c9ba-4109-b99f-172afcfe0b82" />
+  <Project Path="GymManagement.DataAccess/GymManagement.DataAccess.csproj" Id="b3c2729f-6a29-47b8-b69f-0b23bde2383e" />
+  <Project Path="GymManagement.Domain/GymManagement.Domain.csproj" Id="b0a4dcb8-cfdf-455f-a081-8bdf81b8b85b" />
+</Solution>
