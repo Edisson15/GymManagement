@@ -29,7 +29,6 @@ builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<IGymClassRepository, GymClassRepository>();
 builder.Services.AddScoped<IMembershipRepository, MembershipRepository>();
 builder.Services.AddScoped<ITrainerRepository, TrainerRepository>();
-builder.Services.AddScoped<IGymClassRepository, GymClassRepository>();
 builder.Services.AddScoped<IEnrollmentRepository, EnrollmentRepository>();
 
 //Services
@@ -37,7 +36,6 @@ builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<IGymClassService, GymClassService>();
 builder.Services.AddScoped<IMembershipService, MembershipService>();
 builder.Services.AddScoped<ITrainerService, TrainerService>();
-builder.Services.AddScoped<IGymClassService, GymClassService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 
 //AutoMapper

@@ -25,12 +25,18 @@ namespace GymManagement.Domain.Services
 
         public async Task<Member> CreateAsync(Member member)
         {
-            // VALIDACIÓN DE NEGOCIO (igual a SportsLeague)
+            // Validación de negocio
             var existing = await _memberRepository.GetByEmailAsync(member.Email);
             if (existing != null)
                 throw new InvalidOperationException("Ya existe un miembro con ese email");
 
-            return await _memberRepository.CreateAsync(member);
+            // Guardamos el registro plano en la base de datos
+            var createdMember = await _memberRepository.CreateAsync(member);
+
+            // Volvemos a consultar utilizando el método con .Include() para rellenar la propiedad de navegación
+            var fullMember = await _memberRepository.GetByIdAsync(createdMember.Id);
+
+            return fullMember ?? createdMember;
         }
 
         public async Task UpdateAsync(int id, Member member)

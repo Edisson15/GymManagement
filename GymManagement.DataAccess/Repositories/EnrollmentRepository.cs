@@ -16,12 +16,18 @@ namespace GymManagement.DataAccess.Repositories
 
         public async Task<IEnumerable<Enrollment>> GetAllAsync()
         {
-            return await _context.Enrollments.ToListAsync();
+            return await _context.Enrollments
+                .Include(e => e.Member)
+                .Include(e => e.GymClass)
+                .ToListAsync(); ;
         }
 
         public async Task<Enrollment?> GetByIdAsync(int id)
         {
-            return await _context.Enrollments.FindAsync(id);
+            return await _context.Enrollments
+                .Include(e => e.Member)
+                .Include(e => e.GymClass)
+                .FirstOrDefaultAsync(e => e.Id == id); 
         }
 
         public async Task<Enrollment> CreateAsync(Enrollment enrollment)

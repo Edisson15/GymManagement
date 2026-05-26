@@ -5,5 +5,7 @@ namespace GymManagement.API.DTOs.Response
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public int MembershipId { get; set; }
+        public string MembershipName { get; set; } = string.Empty;
     }
 }
