@@ -19,7 +19,7 @@ namespace GymManagement.DataAccess.Repositories
             return await _context.Enrollments
                 .Include(e => e.Member)
                 .Include(e => e.GymClass)
-                .ToListAsync(); ;
+                .ToListAsync(); 
         }
 
         public async Task<Enrollment?> GetByIdAsync(int id)
