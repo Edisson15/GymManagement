@@ -25,7 +25,11 @@ namespace GymManagement.Domain.Services
 
         public async Task<Enrollment> CreateAsync(Enrollment enrollment)
         {
-            return await _repository.CreateAsync(enrollment);
+            var created = await _repository.CreateAsync(enrollment);
+
+            var fullEnrollment = await _repository.GetByIdAsync(created.Id);
+
+            return fullEnrollment ?? created;
         }
 
         public async Task DeleteAsync(int id)
