@@ -1,6 +1,7 @@
 ﻿using GymManagement.Domain.Entities;
 using GymManagement.Domain.Interfaces.Repositories;
 using GymManagement.Domain.Interfaces.Services;
+using Microsoft.Extensions.Logging;
 
 namespace GymManagement.Domain.Services
 {
@@ -8,57 +9,148 @@ namespace GymManagement.Domain.Services
     {
         private readonly IMemberRepository _memberRepository;
 
-        public MemberService(IMemberRepository memberRepository)
+        private readonly ILogger<MemberService> _logger;
+
+        public MemberService(
+            IMemberRepository memberRepository,
+            ILogger<MemberService> logger)
         {
             _memberRepository = memberRepository;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<Member>> GetAllAsync()
         {
+            _logger.LogInformation(
+                "Consultando todos los miembros"
+            );
+
             return await _memberRepository.GetAllAsync();
         }
 
         public async Task<Member?> GetByIdAsync(int id)
         {
-            return await _memberRepository.GetByIdAsync(id);
+            _logger.LogInformation(
+                "Consultando miembro con ID {Id}",
+                id
+            );
+
+            var member = await _memberRepository
+                .GetByIdAsync(id);
+
+            if (member == null)
+            {
+                _logger.LogWarning(
+                    "Miembro con ID {Id} no encontrado",
+                    id
+                );
+            }
+
+            return member;
         }
 
         public async Task<Member> CreateAsync(Member member)
         {
+            _logger.LogInformation(
+                "Intentando crear miembro con email {Email}",
+                member.Email
+            );
+
             // Validación de negocio
-            var existing = await _memberRepository.GetByEmailAsync(member.Email);
+            var existing = await _memberRepository
+                .GetByEmailAsync(member.Email);
+
             if (existing != null)
-                throw new InvalidOperationException("Ya existe un miembro con ese email");
+            {
+                _logger.LogWarning(
+                    "Ya existe un miembro con email {Email}",
+                    member.Email
+                );
 
-            // Guardamos el registro plano en la base de datos
-            var createdMember = await _memberRepository.CreateAsync(member);
+                throw new InvalidOperationException(
+                    "Ya existe un miembro con ese email"
+                );
+            }
 
-            // Volvemos a consultar utilizando el método con .Include() para rellenar la propiedad de navegación
-            var fullMember = await _memberRepository.GetByIdAsync(createdMember.Id);
+            // Guardamos el registro
+            var createdMember = await _memberRepository
+                .CreateAsync(member);
+
+            _logger.LogInformation(
+                "Miembro creado correctamente con ID {Id}",
+                createdMember.Id
+            );
+
+            // Recargamos con Include()
+            var fullMember = await _memberRepository
+                .GetByIdAsync(createdMember.Id);
 
             return fullMember ?? createdMember;
         }
 
         public async Task UpdateAsync(int id, Member member)
         {
-            var existing = await _memberRepository.GetByIdAsync(id);
+            _logger.LogInformation(
+                "Actualizando miembro con ID {Id}",
+                id
+            );
+
+            var existing = await _memberRepository
+                .GetByIdAsync(id);
+
             if (existing == null)
-                throw new KeyNotFoundException("Miembro no encontrado");
+            {
+                _logger.LogWarning(
+                    "No se encontró el miembro con ID {Id}",
+                    id
+                );
+
+                throw new KeyNotFoundException(
+                    "Miembro no encontrado"
+                );
+            }
 
             existing.Name = member.Name;
             existing.Email = member.Email;
             existing.MembershipId = member.MembershipId;
 
-            await _memberRepository.UpdateAsync(existing);
+            await _memberRepository
+                .UpdateAsync(existing);
+
+            _logger.LogInformation(
+                "Miembro con ID {Id} actualizado correctamente",
+                id
+            );
         }
 
         public async Task DeleteAsync(int id)
         {
-            var exists = await _memberRepository.ExistsAsync(id);
+            _logger.LogInformation(
+                "Eliminando miembro con ID {Id}",
+                id
+            );
+
+            var exists = await _memberRepository
+                .ExistsAsync(id);
+
             if (!exists)
-                throw new KeyNotFoundException("Miembro no encontrado");
+            {
+                _logger.LogWarning(
+                    "No se encontró el miembro con ID {Id}",
+                    id
+                );
+
+                throw new KeyNotFoundException(
+                    "Miembro no encontrado"
+                );
+            }
 
             await _memberRepository.DeleteAsync(id);
+
+            _logger.LogInformation(
+                "Miembro con ID {Id} eliminado correctamente",
+                id
+            );
         }
     }
 }
